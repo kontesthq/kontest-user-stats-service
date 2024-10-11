@@ -4,7 +4,7 @@ go 1.23.2
 
 require (
 	github.com/armon/go-metrics v0.4.1 // indirect
-	github.com/ayushs-2k4/go-consul-service-manager v0.1.0 // indirect
+	github.com/ayushs-2k4/go-consul-service-manager v0.1.1 // indirect
 	github.com/ayushs-2k4/go-load-balancer v0.1.4 // indirect
 	github.com/fatih/color v1.16.0 // indirect
 	github.com/hashicorp/consul/api v1.29.4 // indirect
