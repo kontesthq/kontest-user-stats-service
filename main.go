@@ -11,22 +11,43 @@ import (
 	"strconv"
 )
 
-var serviceName = "KONTEST-USER-STATS-SERVICE"
+var (
+	applicationPort = "5151"                       // Default value for local development
+	serviceName     = "KONTEST-USER-STATS-SERVICE" // Service name for Service Registry
+	consulHost      = "localhost"                  // Default value for local development
+	consulPort      = 5150                         // Port as a constant (can be constant if it won't change)
+)
 
-func main() {
-	utils.InitializeDependencies()
-
-	port := os.Getenv("KONTEST_API_USER_STATS_SERVICE_PORT")
-	if port == "" {
-		port = "5152"
+func initializeVariables() {
+	// Attempt to read the KONTEST_API_SERVER_PORT environment variable
+	if port := os.Getenv("KONTEST_API_USER_STATS_SERVICE_PORT"); port != "" {
+		applicationPort = port // Override with the environment variable if set
 	}
 
-	portInt, err := strconv.Atoi(port)
+	// Attempt to read the CONSUL_ADDRESS environment variable
+	if host := os.Getenv("CONSUL_HOST"); host != "" {
+		consulHost = host // Override with the environment variable if set
+	}
+
+	// Attempt to read the CONSUL_PORT environment variable
+	if port := os.Getenv("CONSUL_PORT"); port != "" {
+		if portInt, err := strconv.Atoi(port); err == nil {
+			consulPort = portInt // Override with the environment variable if set and valid
+		}
+	}
+}
+
+func main() {
+	initializeVariables()
+
+	utils.InitializeDependencies()
+
+	portInt, err := strconv.Atoi(applicationPort)
 	if err != nil {
 		log.Fatalf("Failed to convert port to integer: %v", err)
 	}
 
-	consulService := consulServiceManager.NewConsulService("localhost", 5150)
+	consulService := consulServiceManager.NewConsulService(consulHost, consulPort)
 	consulService.Start(portInt, serviceName)
 
 	router := http.NewServeMux()
@@ -34,11 +55,11 @@ func main() {
 	routes.RegisterRoutes(router)
 
 	server := http.Server{
-		Addr:    ":" + port, // Use the field name Addr for the address
-		Handler: router,     // Use the field name Handler for the router
+		Addr:    ":" + applicationPort, // Use the field name Addr for the address
+		Handler: router,                // Use the field name Handler for the router
 	}
 
-	fmt.Println("Server listening at port: " + port)
+	fmt.Println("Server listening at port: " + applicationPort)
 
 	err = server.ListenAndServe()
 	if err != nil {
