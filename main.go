@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	consulServiceManager "github.com/ayushs-2k4/go-consul-service-manager/consulservicemanager"
+	consulServiceManager "github.com/kontesthq/go-consul-service-manager/consulservicemanager"
 	"kontest-user-stats-service/routes"
 	"kontest-user-stats-service/utils"
 	"log"

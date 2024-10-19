@@ -7,6 +7,7 @@ import (
 	"kontest-user-stats-service/exceptions"
 	"kontest-user-stats-service/model/codechef"
 	"log"
+	"log/slog"
 	"net/http"
 )
 
@@ -42,8 +43,11 @@ func (s *CodeChefService) GetUserData(username string) (*codechef.CodeChefUser, 
 	}
 
 	if codeChefUser.Success {
+		slog.Info("User data fetched successfully", slog.String("username", username))
 		return &codeChefUser, nil
 	}
+
+	slog.Error("Username not valid", slog.String("username", username))
 	return nil, &exceptions.CodeChefException{
 		Message:   "Username not valid",
 		ErrorType: exceptions.UsernameNotFound,
